@@ -47,5 +47,6 @@ module.exports.routes = {
   ***************************************************************************/
 
   "POST /urls/shorten": "ShortUrlController.create",
+  "POST /urls/shorten/:customSlug": "ShortUrlController.createCustom",
 
 };
