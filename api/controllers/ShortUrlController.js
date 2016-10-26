@@ -24,7 +24,16 @@ module.exports = {
       var key = req.host + ":-" + hash;
 
       // Create short URL
-      return ShortUrlService.createShortUrl(hash, key, req.param("targetUrl"))
+      return ShortUrlService.createShortUrl(
+        hash,
+        key,
+        req.param("targetUrl"),
+        {
+          key: req.ip,
+          total: 500,
+          timeframe: 60 * 60 * 1000,
+        }
+      )
       .then(function(shortUrl) {
         // Log details for created short URL
         sails.log.debug(
@@ -78,7 +87,16 @@ module.exports = {
     // Construct key
     var key = req.host + ":" + req.param("customSlug");
 
-    ShortUrlService.createShortUrl(req.param("customSlug"), key, req.param("targetUrl"))
+    ShortUrlService.createShortUrl(
+      req.param("customSlug"),
+      key,
+      req.param("targetUrl"),
+      {
+        key: req.ip,
+        total: 500,
+        timeframe: 60 * 60 * 1000,
+      }
+    )
     .then(function(shortUrl) {
       // Log details for created short URL
       sails.log.debug(

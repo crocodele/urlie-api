@@ -12,9 +12,10 @@ module.exports = {
   * @param string hash short URL hash to create
   * @param string key short URL database key
   * @param string targetUrl target URL
+  * @param object rateLimitSettings optional rate limit settings
   * @return Promise
   */
-  createShortUrl: function(hash, key, targetUrl) {
+  createShortUrl: function(hash, key, targetUrl, rateLimitSettings) {
     var Promise = require("bluebird");
 
     return new Promise(function(resolve, reject) {
@@ -26,20 +27,43 @@ module.exports = {
           return reject(new NotUniqueError());
         }
 
-        // Try to add new short URL to database
-        ShortUrl.create({
-          key: key,
-          targetUrl: targetUrl,
-        })
-        .then(function(shortUrl) {
-          // Creation failed, return error
-          if (!shortUrl) {
-            return reject(new InvalidAttributesError());
-          }
+        // Check rate limit
+        if (rateLimitSettings) {
+          RateLimitService.incrementHits(rateLimitSettings.key, rateLimitSettings.total, rateLimitSettings.timeframe)
+          .then(function(requestsMade) {
+            // Try to add new short URL to database
+            ShortUrl.create({
+              key: key,
+              targetUrl: targetUrl,
+            })
+            .then(function(shortUrl) {
+              // Creation failed, return error
+              if (!shortUrl) {
+                return reject(new InvalidAttributesError());
+              }
 
-          // Success
-          return resolve(shortUrl);
-        });
+              // Success
+              return resolve(shortUrl);
+            });
+          });
+        }
+        else
+        {
+          // Try to add new short URL to database
+          ShortUrl.create({
+            key: key,
+            targetUrl: targetUrl,
+          })
+          .then(function(shortUrl) {
+            // Creation failed, return error
+            if (!shortUrl) {
+              return reject(new InvalidAttributesError());
+            }
+
+            // Success
+            return resolve(shortUrl);
+          });
+        }
       })
       .catch(function(error) {
         // Log and return error
