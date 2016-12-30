@@ -27,7 +27,8 @@
     "rc": "1.1.6",
     "sails": "~0.12.7",
     "sails-disk": "~0.10.9",
-    "sails-redis": "^0.10.7"
+    "sails-redis": "^0.10.7",
+    "validator": "^6.2.0"
   },
   "devDependencies": {
     "commitizen": "^2.8.6",

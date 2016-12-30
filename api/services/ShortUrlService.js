@@ -17,20 +17,43 @@ module.exports = {
   */
   createShortUrl: function(hash, key, targetUrl, rateLimitSettings) {
     var Promise = require("bluebird");
+    var NotUniqueError = require("../errors/NotUniqueError");
+    var InvalidAttributesError = require("../errors/InvalidAttributesError");
 
     return new Promise(function(resolve, reject) {
-      // Make sure hash doesn't exist
-      ShortUrl.findOne({key: key})
-      .then(function(existingShortUrl) {
-        // Hash is taken, return error
-        if (existingShortUrl) {
-          return reject(new NotUniqueError());
-        }
+      // Validate target URL
+      ShortUrlService.getValidatedUrl(targetUrl)
+      .then(function(targetUrl) {
+        // Make sure hash doesn't exist
+        ShortUrl.findOne({key: key})
+        .then(function(existingShortUrl) {
+          // Hash is taken, return error
+          if (existingShortUrl) {
+            return reject(new NotUniqueError());
+          }
 
-        // Check rate limit
-        if (rateLimitSettings) {
-          RateLimitService.incrementHits(rateLimitSettings.key, rateLimitSettings.total, rateLimitSettings.timeframe)
-          .then(function(requestsMade) {
+          // Check rate limit
+          if (rateLimitSettings) {
+            RateLimitService.incrementHits(rateLimitSettings.key, rateLimitSettings.total, rateLimitSettings.timeframe)
+            .then(function(requestsMade) {
+              // Try to add new short URL to database
+              ShortUrl.create({
+                key: key,
+                targetUrl: targetUrl,
+              })
+              .then(function(shortUrl) {
+                // Creation failed, return error
+                if (!shortUrl) {
+                  return reject(new InvalidAttributesError());
+                }
+
+                // Success
+                return resolve(shortUrl);
+              });
+            });
+          }
+          else
+          {
             // Try to add new short URL to database
             ShortUrl.create({
               key: key,
@@ -45,31 +68,51 @@ module.exports = {
               // Success
               return resolve(shortUrl);
             });
-          });
-        }
-        else
-        {
-          // Try to add new short URL to database
-          ShortUrl.create({
-            key: key,
-            targetUrl: targetUrl,
-          })
-          .then(function(shortUrl) {
-            // Creation failed, return error
-            if (!shortUrl) {
-              return reject(new InvalidAttributesError());
-            }
-
-            // Success
-            return resolve(shortUrl);
-          });
-        }
+          }
+        })
+        .catch(function(error) {
+          // Log and return error
+          sails.log.error(error);
+          return reject(error);
+        });
       })
       .catch(function(error) {
         // Log and return error
         sails.log.error(error);
         return reject(error);
       });
+    });
+  },
+
+
+  /**
+  * Validate URL for shortening
+  * @param string url URL to validate
+  * @return Promise
+  */
+  getValidatedUrl: function(url) {
+    var Promise = require("bluebird");
+    var validator = require("validator");
+
+    return new Promise(function(resolve, reject) {
+      // Prepend http:// if protocol is missing
+      if (!_.includes(url, "://")) {
+        url = "http://" + url;
+      }
+
+      // Maximum URL length is 2000 characters - some browsers, firewalls etc.
+      // choke on URLs longer than that
+      if (url.length > 2000) {
+        return reject(new Error("URL is too long, maximum URL length is 2000 characters"));
+      }
+
+      // Validate URL
+      if (!validator.isURL(url, {require_valid_protocol: false})) {
+        return reject(new Error("Invalid URL"));
+      }
+
+      // Return validated URL on success
+      return resolve(url);
     });
   },
 

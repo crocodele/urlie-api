@@ -52,7 +52,7 @@ module.exports = {
         // Return error message and data
         return res.json(409, {
           success: false,
-          message: "Short URL creation failed, hash is taken",
+          message: "Short URL creation failed: Hash is taken",
           data: {
             hash: hash,
           },
@@ -63,7 +63,14 @@ module.exports = {
         // Return error message and data
         return res.json(400, {
           success: false,
-          message: "Short URL creation failed, invalid attributes given",
+          message: "Short URL creation failed: Invalid attributes given",
+          error: error,
+        });
+      })
+      .catch(function(error) {
+        return res.json(500, {
+          success: false,
+          message: "Short URL creation failed: " + error.message,
           error: error,
         });
       });
@@ -71,9 +78,9 @@ module.exports = {
     .catch(function(error) {
       return res.json(500, {
         success: false,
-        message: "Short URL creation failed",
+        message: "Short URL creation failed: " + error.message,
         error: error,
-      })
+      });
     });
   },
 
@@ -115,9 +122,9 @@ module.exports = {
       // Return error message and data
       return res.json(409, {
         success: false,
-        message: "Short URL creation failed, hash is taken",
+        message: "Short URL creation failed: Hash is taken",
         data: {
-          hash: hash,
+          hash: req.param("customSlug"),
         },
         error: error,
       });
@@ -126,14 +133,14 @@ module.exports = {
       // Return error message and data
       return res.json(400, {
         success: false,
-        message: "Short URL creation failed, invalid attributes given",
+        message: "Short URL creation failed: Invalid attributes given",
         error: error,
       });
     })
     .catch(function(error) {
       return res.json(500, {
         success: false,
-        message: "Short URL creation failed",
+        message: "Short URL creation failed: " + error.message,
         error: error,
       });
     });
