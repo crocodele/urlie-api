@@ -9,7 +9,7 @@
   ],
   "dependencies": {
     "bases": "^0.2.1",
-    "bluebird": "^3.4.6",
+    "bluebird": "^3.4.7",
     "ejs": "2.5.5",
     "grunt": "1.0.1",
     "grunt-contrib-clean": "1.0.0",
@@ -26,18 +26,18 @@
     "include-all": "^2.0.0",
     "lodash": "^4.17.3",
     "rc": "1.1.6",
-    "sails": "~0.12.7",
-    "sails-disk": "~0.10.9",
+    "sails": "~0.12.11",
+    "sails-disk": "~0.10.10",
     "sails-redis": "^0.10.7",
     "validator": "^6.2.0"
   },
   "devDependencies": {
-    "commitizen": "^2.8.6",
+    "commitizen": "^2.9.3",
     "cz-conventional-changelog": "^1.2.0",
-    "mocha": "^3.1.2",
+    "mocha": "^3.2.0",
     "mocha-steps": "^1.0.2",
     "semantic-release": "^6.3.2",
-    "should": "^11.1.1",
+    "should": "^11.1.2",
     "supertest": "^2.0.1"
   },
   "scripts": {
