@@ -14,6 +14,14 @@ module.exports = {
     var NotUniqueError = require("../errors/NotUniqueError");
     var InvalidAttributesError = require("../errors/InvalidAttributesError");
 
+    if (!req.param("targetUrl")) {
+      return res.json(400, {
+        success: false,
+        message: "Short URL creation failed: Invalid attributes given",
+        error: new Error("Invalid URL"),
+      });
+    }
+
     // Get next counter value for domain
     DomainCounterService.getNextValue(req.host)
     .then(function(counterValue) {
