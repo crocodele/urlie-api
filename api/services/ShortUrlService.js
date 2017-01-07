@@ -49,7 +49,21 @@ module.exports = {
 
                 // Success
                 return resolve(shortUrl);
+              })
+              .catch(function(error) {
+                // Race condition with identical keys inserted at the same time
+                if (_.includes(error.message, "Record does not satisfy unique constraints")) {
+                  return reject(new NotUniqueError());
+                }
+
+                // Log and return error
+                sails.log.error(error);
+                return reject(error);
               });
+            })
+            // Rate limit exceeded
+            .catch(function(error) {
+              return reject(error);
             });
           }
           else
@@ -67,6 +81,16 @@ module.exports = {
 
               // Success
               return resolve(shortUrl);
+            })
+            .catch(function(error) {
+              // Race condition with identical keys inserted at the same time
+              if (_.includes(error.message, "Record does not satisfy unique constraints")) {
+                return reject(new NotUniqueError());
+              }
+
+              // Log and return error
+              sails.log.error(error);
+              return reject(error);
             });
           }
         })
