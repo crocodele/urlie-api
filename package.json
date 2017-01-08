@@ -24,15 +24,15 @@
     "grunt-sails-linker": "~1.0.4",
     "grunt-sync": "0.6.2",
     "include-all": "^2.0.0",
-    "lodash": "^4.17.3",
+    "lodash": "^4.17.4",
     "rc": "1.1.6",
     "sails": "~0.12.11",
     "sails-disk": "~0.10.10",
     "sails-redis": "^0.10.7",
-    "validator": "^6.2.0"
+    "validator": "^6.2.1"
   },
   "devDependencies": {
-    "commitizen": "^2.9.3",
+    "commitizen": "^2.9.5",
     "coveralls": "^2.11.15",
     "cz-conventional-changelog": "^1.2.0",
     "istanbul": "^0.4.5",
