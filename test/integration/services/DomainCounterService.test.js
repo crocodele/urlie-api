@@ -3,7 +3,7 @@ var should = require("should");
 describe("DomainCounterService", function() {
 
   describe("#getNextValue", function() {
-    it("should return 10000 as first counter value", function () {
+    it("should return 10000 as first counter value", function() {
       var domain = "countertest.urlie.fi";
       DomainCounterService.getNextValue(domain)
       .should.be.fulfilledWith(10000);

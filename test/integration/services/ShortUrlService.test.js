@@ -92,7 +92,7 @@ describe("ShortUrlService", function() {
   });
 
   describe("#getValidatedUrl", function() {
-    it("should accept valid URL https://www.google.com/", function () {
+    it("should accept valid URL https://www.google.com/", function() {
       var testUrl = "https://www.google.com/";
       ShortUrlService.getValidatedUrl(testUrl)
       .should.be.fulfilledWith(testUrl);
