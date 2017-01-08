@@ -57,7 +57,7 @@ module.exports = {
                 }
 
                 // Log and return error
-                sails.log.error(error);
+                sails.log.debug(error);
                 return reject(error);
               });
             })
@@ -89,20 +89,20 @@ module.exports = {
               }
 
               // Log and return error
-              sails.log.error(error);
+              sails.log.debug(error);
               return reject(error);
             });
           }
         })
         .catch(function(error) {
           // Log and return error
-          sails.log.error(error);
+          sails.log.debug(error);
           return reject(error);
         });
       })
       .catch(function(error) {
         // Log and return error
-        sails.log.error(error);
+        sails.log.debug(error);
         return reject(error);
       });
     });
