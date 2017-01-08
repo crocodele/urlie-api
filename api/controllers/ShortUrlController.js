@@ -18,7 +18,7 @@ module.exports = {
       return res.json(400, {
         success: false,
         message: "Short URL creation failed: Invalid attributes given",
-        error: new Error("Invalid URL"),
+        error: new Error("Missing target URL"),
       });
     }
 

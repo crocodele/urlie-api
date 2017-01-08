@@ -117,6 +117,7 @@ module.exports = {
   getValidatedUrl: function(url) {
     var Promise = require("bluebird");
     var validator = require("validator");
+    var InvalidAttributesError = require("../errors/InvalidAttributesError");
 
     return new Promise(function(resolve, reject) {
       // Prepend http:// if protocol is missing
@@ -127,12 +128,12 @@ module.exports = {
       // Maximum URL length is 2000 characters - some browsers, firewalls etc.
       // choke on URLs longer than that
       if (url.length > 2000) {
-        return reject(new Error("URL is too long, maximum URL length is 2000 characters"));
+        return reject(new InvalidAttributesError("URL is too long, maximum URL length is 2000 characters"));
       }
 
       // Validate URL
       if (!validator.isURL(url, {require_valid_protocol: false})) {
-        return reject(new Error("Invalid URL"));
+        return reject(new InvalidAttributesError("Invalid URL"));
       }
 
       // Return validated URL on success

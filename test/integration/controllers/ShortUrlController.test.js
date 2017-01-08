@@ -24,6 +24,40 @@ describe("ShortUrlController", function() {
         })
         .end(done);
     });
+
+    it("should fail when targetUrl parameter is missing", function(done) {
+      request(sails.hooks.http.app)
+      .post("/urls/shorten")
+      .expect(400)
+      .expect(function(res) {
+        if (res.body.success !== false) {
+          throw new Error("Unexpected success value");
+        }
+        if (res.body.message !== "Short URL creation failed: Invalid attributes given") {
+          throw new Error("Unexpected message value");
+        }
+      })
+      .end(done);
+    });
+
+    it("should fail when targetUrl is an invalid, irreparable URL", function(done) {
+      var targetUrl = "notaurl";
+      request(sails.hooks.http.app)
+      .post("/urls/shorten")
+      .send({
+        targetUrl: targetUrl,
+      })
+      .expect(400)
+      .expect(function(res) {
+        if (res.body.success !== false) {
+          throw new Error("Unexpected success value");
+        }
+        if (res.body.message !== "Short URL creation failed: Invalid attributes given") {
+          throw new Error("Unexpected message value");
+        }
+      })
+      .end(done);
+    });
   });
 
   describe("#createCustom", function() {
@@ -51,6 +85,42 @@ describe("ShortUrlController", function() {
           }
         })
         .end(done);
+    });
+
+    it("should fail when targetUrl parameter is missing", function(done) {
+      var customSlug = "customMissingUrl";
+      request(sails.hooks.http.app)
+      .post("/urls/shorten/" + customSlug)
+      .expect(400)
+      .expect(function(res) {
+        if (res.body.success !== false) {
+          throw new Error("Unexpected success value");
+        }
+        if (res.body.message !== "Short URL creation failed: Invalid attributes given") {
+          throw new Error("Unexpected message value");
+        }
+      })
+      .end(done);
+    });
+
+    it("should fail when targetUrl is an invalid, irreparable URL", function(done) {
+      var customSlug = "customInvalidUrl";
+      var targetUrl = "notaurl";
+      request(sails.hooks.http.app)
+      .post("/urls/shorten/" + customSlug)
+      .send({
+        targetUrl: targetUrl,
+      })
+      .expect(400)
+      .expect(function(res) {
+        if (res.body.success !== false) {
+          throw new Error("Unexpected success value");
+        }
+        if (res.body.message !== "Short URL creation failed: Invalid attributes given") {
+          throw new Error("Unexpected message value");
+        }
+      })
+      .end(done);
     });
   });
 
