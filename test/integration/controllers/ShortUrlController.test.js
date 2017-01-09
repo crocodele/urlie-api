@@ -1,4 +1,7 @@
 var request = require("supertest");
+var _ = require("lodash");
+var async = require("async");
+var should = require("should");
 
 describe("ShortUrlController", function() {
 
@@ -57,6 +60,48 @@ describe("ShortUrlController", function() {
         }
       })
       .end(done);
+    });
+
+    it("should fail when rate limit is exceeded", function(done) {
+      var targetUrl = "http://slashdot.org/";
+      var ip = "161.97.214.35";
+      async.mapLimit(_.range(1, 600), 2,
+        function(i, next) {
+          request(sails.hooks.http.app)
+          .post("/urls/shorten")
+          .set("X-Forwarded-For", ip)
+          .send({
+            targetUrl: targetUrl + i,
+          })
+          .end(next);
+        },
+        function(error, results) {
+          should.not.exist(error);
+
+          request(sails.hooks.http.app)
+          .post("/urls/shorten")
+          .set("X-Forwarded-For", ip)
+          .send({
+            targetUrl: targetUrl + "550",
+          })
+          .expect(429)
+          .expect(function(res) {
+            if (res.body.success !== false) {
+              throw new Error("Unexpected success value");
+            }
+            if (res.body.message !== "Short URL creation failed: Rate limit has been exceeded") {
+              throw new Error("Unexpected message value");
+            }
+            if (!("data") in res.body) {
+              throw new Error("Missing data value");
+            }
+            if (!("resetTimestamp") in res.body.data) {
+              throw new Error("Missing reset timestamp data value");
+            }
+          })
+          .end(done);
+        }
+      );
     });
   });
 

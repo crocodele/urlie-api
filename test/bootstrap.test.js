@@ -22,6 +22,9 @@ before(function(done) {
           database: 1,
         },
       },
+      log: {
+        level: "warn",
+      },
       models: {
         migrate: "drop",
       },
@@ -31,6 +34,9 @@ before(function(done) {
       if (error) {
         return done(error);
       }
+
+      // Trust proxy to allow IP address spoofing
+      sails.hooks.http.app.set("trust proxy", true);
 
       // Start with empty database
       DomainCounter.native(function(error, collection) {

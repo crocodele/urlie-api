@@ -66,7 +66,12 @@ module.exports = {
           }
           // Limit is exceeded
           else if (value.hits >= value.total) {
-            return reject(new RateLimitError("Rate limit exceeded"));
+            var resetTimestamp = Math.ceil(value.reset / 1000);
+
+            return reject(new RateLimitError("Rate limit exceeded", {
+              resetTimestamp: resetTimestamp,
+              resetTimestampHuman: new Date(value.reset).toString(),
+            }));
           }
 
           // Increment hits

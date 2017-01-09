@@ -57,6 +57,18 @@ module.exports = {
           data: shortUrl,
         });
       })
+      .catch(RateLimitError, function(error) {
+        // Return error message and data
+        return res.json(429, {
+          success: false,
+          message: "Short URL creation failed: Rate limit has been exceeded",
+          data: {
+            resetTimestamp: error.extra.resetTimestamp,
+            resetTimestampHuman: error.extra.resetTimestampHuman,
+          },
+          error: error,
+        });
+      })
       .catch(NotUniqueError, function(error) {
         // Return error message and data
         return res.json(409, {
@@ -99,6 +111,7 @@ module.exports = {
   createCustom: function(req, res) {
     var NotUniqueError = require("../errors/NotUniqueError");
     var InvalidAttributesError = require("../errors/InvalidAttributesError");
+    var RateLimitError = require("../errors/RateLimitError");
 
     // Construct key
     var key = req.host + ":" + req.param("customSlug");
@@ -125,6 +138,18 @@ module.exports = {
         success: true,
         message: "Short URL created successfully",
         data: shortUrl,
+      });
+    })
+    .catch(RateLimitError, function(error) {
+      // Return error message and data
+      return res.json(429, {
+        success: false,
+        message: "Short URL creation failed: Rate limit has been exceeded",
+        data: {
+          resetTimestamp: error.extra.resetTimestamp,
+          resetTimestampHuman: error.extra.resetTimestampHuman,
+        },
+        error: error,
       });
     })
     .catch(NotUniqueError, function(error) {

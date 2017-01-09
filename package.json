@@ -32,6 +32,7 @@
     "validator": "^6.2.1"
   },
   "devDependencies": {
+    "async": "^2.1.4",
     "commitizen": "^2.9.5",
     "coveralls": "^2.11.15",
     "cz-conventional-changelog": "^1.2.0",
