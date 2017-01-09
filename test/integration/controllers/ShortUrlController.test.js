@@ -65,7 +65,7 @@ describe("ShortUrlController", function() {
     it("should fail when rate limit is exceeded", function(done) {
       var targetUrl = "http://slashdot.org/";
       var ip = "161.97.214.35";
-      async.mapLimit(_.range(1, 600), 2,
+      async.mapLimit(_.range(1, 700), 2,
         function(i, next) {
           request(sails.hooks.http.app)
           .post("/urls/shorten")
@@ -82,7 +82,7 @@ describe("ShortUrlController", function() {
           .post("/urls/shorten")
           .set("X-Forwarded-For", ip)
           .send({
-            targetUrl: targetUrl + "550",
+            targetUrl: targetUrl + "700",
           })
           .expect(429)
           .expect(function(res) {
@@ -166,6 +166,49 @@ describe("ShortUrlController", function() {
         }
       })
       .end(done);
+    });
+
+    it("should fail when rate limit is exceeded", function(done) {
+      var targetUrl = "https://medium.com/";
+      var hash = "customMedium";
+      var ip = "201.78.67.4";
+      async.mapLimit(_.range(1, 700), 2,
+        function(i, next) {
+          request(sails.hooks.http.app)
+          .post("/urls/shorten/" + hash + "-" + i)
+          .set("X-Forwarded-For", ip)
+          .send({
+            targetUrl: targetUrl + i,
+          })
+          .end(next);
+        },
+        function(error, results) {
+          should.not.exist(error);
+
+          request(sails.hooks.http.app)
+          .post("/urls/shorten/" + hash + "-700")
+          .set("X-Forwarded-For", ip)
+          .send({
+            targetUrl: targetUrl + "700",
+          })
+          .expect(429)
+          .expect(function(res) {
+            if (res.body.success !== false) {
+              throw new Error("Unexpected success value");
+            }
+            if (res.body.message !== "Short URL creation failed: Rate limit has been exceeded") {
+              throw new Error("Unexpected message value");
+            }
+            if (!("data") in res.body) {
+              throw new Error("Missing data value");
+            }
+            if (!("resetTimestamp") in res.body.data) {
+              throw new Error("Missing reset timestamp data value");
+            }
+          })
+          .end(done);
+        }
+      );
     });
   });
 
