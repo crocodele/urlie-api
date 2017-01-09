@@ -38,6 +38,7 @@ module.exports = {
   */
   incrementHits: function(key, total, timeframeLength) {
     var Promise = require("bluebird");
+    var RateLimitError = require("../errors/RateLimitError");
 
     var counterKey = "waterline:ratelimit:" + key;
     var now = Date.now();
@@ -65,7 +66,7 @@ module.exports = {
           }
           // Limit is exceeded
           else if (value.hits >= value.total) {
-            return reject(new Error("Rate limit exceeded"));
+            return reject(new RateLimitError("Rate limit exceeded"));
           }
 
           // Increment hits

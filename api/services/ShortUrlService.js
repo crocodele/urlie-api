@@ -19,6 +19,7 @@ module.exports = {
     var Promise = require("bluebird");
     var NotUniqueError = require("../errors/NotUniqueError");
     var InvalidAttributesError = require("../errors/InvalidAttributesError");
+    var RateLimitError = require("../errors/RateLimitError");
 
     return new Promise(function(resolve, reject) {
       // Validate target URL
@@ -62,7 +63,12 @@ module.exports = {
               });
             })
             // Rate limit exceeded
+            .catch(RateLimitError, function(error) {
+              return reject(error);
+            })
+            // Log and return error
             .catch(function(error) {
+              sails.log.debug(error);
               return reject(error);
             });
           }

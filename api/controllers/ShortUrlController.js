@@ -13,6 +13,7 @@ module.exports = {
     var bases = require("bases");
     var NotUniqueError = require("../errors/NotUniqueError");
     var InvalidAttributesError = require("../errors/InvalidAttributesError");
+    var RateLimitError = require("../errors/RateLimitError");
 
     if (!req.param("targetUrl")) {
       return res.json(400, {

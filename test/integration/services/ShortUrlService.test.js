@@ -2,6 +2,7 @@ var Promise = require("bluebird");
 var should = require("should");
 var _ = require("lodash");
 var NotUniqueError = require("../../../api/errors/NotUniqueError");
+var RateLimitError = require("../../../api/errors/RateLimitError");
 
 describe("ShortUrlService", function() {
 
@@ -78,9 +79,13 @@ describe("ShortUrlService", function() {
               done(new Error("Rate limit exceeded - but short URL generation succeeded anyway"));
             })
             // Expected result
-            .catch(function(error) {
+            .catch(RateLimitError, function(error) {
               error.message.should.equal("Rate limit exceeded");
               done();
+            })
+            // Not expected result
+            .catch(function(error) {
+              done(error);
             });
           })
           .catch(done);
