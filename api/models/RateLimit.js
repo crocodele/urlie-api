@@ -34,7 +34,7 @@ module.exports = {
   * @return Promise
   */
   incrementHits: function(key, total, timeframeLength) {
-    var microtime = require("microtime");
+    var microtime = require("microtime-fast");
     var Promise = require("bluebird");
     var RateLimitError = require("../errors/RateLimitError");
 
