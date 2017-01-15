@@ -65,7 +65,7 @@ describe("ShortUrlController", function() {
     it("should fail when rate limit is exceeded", function(done) {
       var targetUrl = "http://slashdot.org/";
       var ip = "161.97.214.35";
-      async.mapLimit(_.range(1, 700), 2,
+      async.mapLimit(_.range(1, 501), 20,
         function(i, next) {
           request(sails.hooks.http.app)
           .post("/urls/shorten")
@@ -73,6 +73,7 @@ describe("ShortUrlController", function() {
           .send({
             targetUrl: targetUrl + i,
           })
+          .expect(200)
           .end(next);
         },
         function(error, results) {
@@ -82,7 +83,7 @@ describe("ShortUrlController", function() {
           .post("/urls/shorten")
           .set("X-Forwarded-For", ip)
           .send({
-            targetUrl: targetUrl + "700",
+            targetUrl: targetUrl + "501",
           })
           .expect(429)
           .expect(function(res) {
@@ -94,9 +95,6 @@ describe("ShortUrlController", function() {
             }
             if (!("data") in res.body) {
               throw new Error("Missing data value");
-            }
-            if (!("resetTimestamp") in res.body.data) {
-              throw new Error("Missing reset timestamp data value");
             }
           })
           .end(done);
@@ -172,7 +170,7 @@ describe("ShortUrlController", function() {
       var targetUrl = "https://medium.com/";
       var hash = "customMedium";
       var ip = "201.78.67.4";
-      async.mapLimit(_.range(1, 700), 2,
+      async.mapLimit(_.range(1, 501), 20,
         function(i, next) {
           request(sails.hooks.http.app)
           .post("/urls/shorten/" + hash + "-" + i)
@@ -180,16 +178,17 @@ describe("ShortUrlController", function() {
           .send({
             targetUrl: targetUrl + i,
           })
+          .expect(200)
           .end(next);
         },
         function(error, results) {
           should.not.exist(error);
 
           request(sails.hooks.http.app)
-          .post("/urls/shorten/" + hash + "-700")
+          .post("/urls/shorten/" + hash + "-501")
           .set("X-Forwarded-For", ip)
           .send({
-            targetUrl: targetUrl + "700",
+            targetUrl: targetUrl + "501",
           })
           .expect(429)
           .expect(function(res) {
@@ -201,9 +200,6 @@ describe("ShortUrlController", function() {
             }
             if (!("data") in res.body) {
               throw new Error("Missing data value");
-            }
-            if (!("resetTimestamp") in res.body.data) {
-              throw new Error("Missing reset timestamp data value");
             }
           })
           .end(done);

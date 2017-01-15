@@ -62,10 +62,6 @@ module.exports = {
         return res.json(429, {
           success: false,
           message: "Short URL creation failed: Rate limit has been exceeded",
-          data: {
-            resetTimestamp: error.extra.resetTimestamp,
-            resetTimestampHuman: error.extra.resetTimestampHuman,
-          },
           error: error,
         });
       })
@@ -145,10 +141,6 @@ module.exports = {
       return res.json(429, {
         success: false,
         message: "Short URL creation failed: Rate limit has been exceeded",
-        data: {
-          resetTimestamp: error.extra.resetTimestamp,
-          resetTimestampHuman: error.extra.resetTimestampHuman,
-        },
         error: error,
       });
     })

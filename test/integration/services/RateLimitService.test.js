@@ -1,3 +1,5 @@
+var should = require("should");
+
 describe("RateLimitService", function() {
 
   describe("#incrementHits", function() {
@@ -10,7 +12,6 @@ describe("RateLimitService", function() {
         result.should.be.an.Object();
         result.total.should.equal(100);
         result.hits.should.equal(1);
-        result.reset.should.be.approximately(Date.now() + timeframe, 100);
         result.remaining.should.equal(99);
         done();
       })
@@ -28,7 +29,6 @@ describe("RateLimitService", function() {
           secondResult.should.be.an.Object();
           secondResult.total.should.equal(100);
           secondResult.hits.should.equal(2);
-          secondResult.reset.should.be.approximately(Date.now() + timeframe, 500);
           secondResult.remaining.should.equal(98);
           done();
         })
@@ -78,13 +78,15 @@ describe("RateLimitService", function() {
       RateLimitService.incrementHits(key, maxRequests, timeframe)
       .then(function(initialStatus) {
         initialStatus.should.be.an.Object();
-        initialStatus.reset.should.be.approximately(Date.now() + timeframe, 100);
+        initialStatus.total.should.equal(3);
+        initialStatus.hits.should.equal(1);
         initialStatus.remaining.should.equal(2);
         setTimeout(function() {
           RateLimitService.incrementHits(key, maxRequests, timeframe)
           .then(function(finalStatus) {
             finalStatus.should.be.an.Object();
-            finalStatus.reset.should.be.approximately(Date.now() + timeframe, 100);
+            finalStatus.total.should.equal(3);
+            finalStatus.hits.should.equal(1);
             finalStatus.remaining.should.equal(2);
             done();
           })
