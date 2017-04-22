@@ -1,4 +1,4 @@
-sudo: false
+sudo: required
 language: node_js
 cache:
   directories:
@@ -12,8 +12,17 @@ node_js:
   - "6"
   - "5"
   - "4"
+env:
+  - CXX=g++-5
+addons:
+  apt:
+    sources:
+      - ubuntu-toolchain-r-test
+    packages:
+      - g++-5
 before_install:
   - npm i -g npm@^2.0.0
+  - npm i -g node-gyp
 before_script:
   - npm prune
 after_success:
